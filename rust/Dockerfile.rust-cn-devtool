@@ -1,0 +1,20 @@
+FROM rust:1.62
+
+# 换 apt 源
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+
+# 装软件
+RUN apt-get update && apt-get install vim -y
+
+# rust 换源
+RUN mkdir /.cargo && echo '[source.crates-io]\n\
+registry = "https://github.com/rust-lang/crates.io-index"\n\
+replace-with = "tuna"\n\
+[source.tuna]\n\
+registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"\n\
+[net]\n\
+git-fetch-with-cli = true' > /.cargo/config
+RUN rustup component add rustfmt clippy
+RUN cargo install diesel_cli
+
+CMD [ "sleep", "infinity"]
