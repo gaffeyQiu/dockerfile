@@ -1,0 +1,18 @@
+FROM golang:1.18
+
+# 换 apt 源
+RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+
+# 装软件
+RUN apt-get update && apt-get install vim -y
+
+RUN go env -w GOPROXY=https://proxy.golang.com.cn,direct
+# 代码检查工具
+RUN go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.46.2
+
+# 微服务工具
+COPY ./protoc /usr/bin/protoc
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest && \
+    go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+
+CMD [ "sleep", "infinity"]
